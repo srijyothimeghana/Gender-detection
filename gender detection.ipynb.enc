@@ -1,0 +1,351 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Using TensorFlow backend.\n"
+     ]
+    }
+   ],
+   "source": [
+    "from keras.models import Sequential\n",
+    "from keras.layers import Dense\n",
+    "from keras.layers import Conv2D\n",
+    "from keras.layers import MaxPooling2D\n",
+    "from keras.layers import Flatten"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "model=Sequential()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import cv2"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "WARNING:tensorflow:From C:\\Users\\SURESH KUMAR\\Anaconda3\\lib\\site-packages\\tensorflow\\python\\framework\\op_def_library.py:263: colocate_with (from tensorflow.python.framework.ops) is deprecated and will be removed in a future version.\n",
+      "Instructions for updating:\n",
+      "Colocations handled automatically by placer.\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\SURESH KUMAR\\Anaconda3\\lib\\site-packages\\ipykernel_launcher.py:1: UserWarning: Update your `Conv2D` call to the Keras 2 API: `Conv2D(32, (3, 3), input_shape=(64, 64, 3..., activation=\"relu\")`\n",
+      "  \"\"\"Entry point for launching an IPython kernel.\n"
+     ]
+    }
+   ],
+   "source": [
+    "model.add(Conv2D(32,3,3,input_shape=(64,64,3),activation='relu'))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "model.add(MaxPooling2D(pool_size=(2,2)))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "model.add(Flatten())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\SURESH KUMAR\\Anaconda3\\lib\\site-packages\\ipykernel_launcher.py:1: UserWarning: Update your `Dense` call to the Keras 2 API: `Dense(activation=\"relu\", units=128, kernel_initializer=\"random_uniform\")`\n",
+      "  \"\"\"Entry point for launching an IPython kernel.\n"
+     ]
+    }
+   ],
+   "source": [
+    "model.add(Dense(output_dim=128,activation='relu',init='random_uniform'))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\SURESH KUMAR\\Anaconda3\\lib\\site-packages\\ipykernel_launcher.py:1: UserWarning: Update your `Dense` call to the Keras 2 API: `Dense(activation=\"sigmoid\", units=1, kernel_initializer=\"random_uniform\")`\n",
+      "  \"\"\"Entry point for launching an IPython kernel.\n"
+     ]
+    }
+   ],
+   "source": [
+    "model.add(Dense(output_dim=1,activation='sigmoid',init='random_uniform'))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "model.compile(optimizer='adam',loss='binary_crossentropy',metrics=['accuracy'])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from keras.preprocessing.image import ImageDataGenerator"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "train_datagen=ImageDataGenerator(rescale=1./255,shear_range=0.2,zoom_range=0.2,horizontal_flip=True)\n",
+    "test_datagen = ImageDataGenerator(rescale=1./255)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Found 2246 images belonging to 2 classes.\n",
+      "Found 1149 images belonging to 2 classes.\n"
+     ]
+    }
+   ],
+   "source": [
+    "x_train = train_datagen.flow_from_directory(r'C:/Users/SURESH KUMAR/Desktop/gen/train',target_size=(64,64),batch_size=32,class_mode='binary')\n",
+    "x_test = train_datagen.flow_from_directory(r'C:/Users/SURESH KUMAR/Desktop/gen/test',target_size=(64,64),batch_size=32,class_mode='binary')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'female': 0, 'male': 1}\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(x_train.class_indices)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Epoch 1/50\n",
+      "250/250 [==============================] - 133s 531ms/step - loss: 0.3278 - acc: 0.8602 - val_loss: 0.4630 - val_acc: 0.7766\n",
+      "Epoch 2/50\n",
+      "250/250 [==============================] - 78s 312ms/step - loss: 0.3234 - acc: 0.8628 - val_loss: 0.4757 - val_acc: 0.7786\n",
+      "Epoch 3/50\n",
+      "250/250 [==============================] - 76s 305ms/step - loss: 0.3001 - acc: 0.8706 - val_loss: 0.4115 - val_acc: 0.8025\n",
+      "Epoch 4/50\n",
+      "250/250 [==============================] - 75s 299ms/step - loss: 0.2912 - acc: 0.8790 - val_loss: 0.4768 - val_acc: 0.7904\n",
+      "Epoch 5/50\n",
+      "250/250 [==============================] - 69s 277ms/step - loss: 0.2713 - acc: 0.8880 - val_loss: 0.4667 - val_acc: 0.8020\n",
+      "Epoch 6/50\n",
+      "250/250 [==============================] - 61s 244ms/step - loss: 0.2582 - acc: 0.8978 - val_loss: 0.4979 - val_acc: 0.7861\n",
+      "Epoch 7/50\n",
+      "250/250 [==============================] - 61s 243ms/step - loss: 0.2475 - acc: 0.9023 - val_loss: 0.5087 - val_acc: 0.7791\n",
+      "Epoch 8/50\n",
+      "250/250 [==============================] - 62s 250ms/step - loss: 0.2374 - acc: 0.9063 - val_loss: 0.5267 - val_acc: 0.7765\n",
+      "Epoch 9/50\n",
+      "250/250 [==============================] - 61s 245ms/step - loss: 0.2218 - acc: 0.9100 - val_loss: 0.5676 - val_acc: 0.7771\n",
+      "Epoch 10/50\n",
+      "250/250 [==============================] - 61s 243ms/step - loss: 0.2262 - acc: 0.9093 - val_loss: 0.5993 - val_acc: 0.7756\n",
+      "Epoch 11/50\n",
+      "250/250 [==============================] - 61s 243ms/step - loss: 0.2015 - acc: 0.9191 - val_loss: 0.5346 - val_acc: 0.7955\n",
+      "Epoch 12/50\n",
+      "250/250 [==============================] - 61s 244ms/step - loss: 0.1998 - acc: 0.9248 - val_loss: 0.5360 - val_acc: 0.7874\n",
+      "Epoch 13/50\n",
+      "250/250 [==============================] - 61s 244ms/step - loss: 0.1870 - acc: 0.9275 - val_loss: 0.6270 - val_acc: 0.7761\n",
+      "Epoch 14/50\n",
+      "250/250 [==============================] - 61s 243ms/step - loss: 0.1690 - acc: 0.9340 - val_loss: 0.7234 - val_acc: 0.7736\n",
+      "Epoch 15/50\n",
+      "250/250 [==============================] - 59s 237ms/step - loss: 0.1702 - acc: 0.9362 - val_loss: 0.5943 - val_acc: 0.7925\n",
+      "Epoch 16/50\n",
+      "250/250 [==============================] - 58s 230ms/step - loss: 0.1629 - acc: 0.9381 - val_loss: 0.6671 - val_acc: 0.7869\n",
+      "Epoch 17/50\n",
+      "250/250 [==============================] - 58s 231ms/step - loss: 0.1462 - acc: 0.9441 - val_loss: 0.6599 - val_acc: 0.7786\n",
+      "Epoch 18/50\n",
+      "250/250 [==============================] - 62s 246ms/step - loss: 0.1410 - acc: 0.9467 - val_loss: 0.7215 - val_acc: 0.7801\n",
+      "Epoch 19/50\n",
+      "250/250 [==============================] - 61s 246ms/step - loss: 0.1270 - acc: 0.9565 - val_loss: 0.8506 - val_acc: 0.7746\n",
+      "Epoch 20/50\n",
+      "250/250 [==============================] - 63s 251ms/step - loss: 0.1206 - acc: 0.9551 - val_loss: 0.7463 - val_acc: 0.7953\n",
+      "Epoch 21/50\n",
+      "250/250 [==============================] - 62s 249ms/step - loss: 0.1187 - acc: 0.9540 - val_loss: 0.7380 - val_acc: 0.7791\n",
+      "Epoch 22/50\n",
+      "250/250 [==============================] - 62s 247ms/step - loss: 0.1250 - acc: 0.9519 - val_loss: 0.8264 - val_acc: 0.7781\n",
+      "Epoch 23/50\n",
+      "250/250 [==============================] - 62s 246ms/step - loss: 0.1152 - acc: 0.9581 - val_loss: 0.8172 - val_acc: 0.7786\n",
+      "Epoch 24/50\n",
+      "250/250 [==============================] - 62s 247ms/step - loss: 0.1230 - acc: 0.9537 - val_loss: 0.7766 - val_acc: 0.7779\n",
+      "Epoch 25/50\n",
+      "250/250 [==============================] - 62s 247ms/step - loss: 0.0904 - acc: 0.9658 - val_loss: 0.9548 - val_acc: 0.7731\n",
+      "Epoch 26/50\n",
+      "250/250 [==============================] - 62s 247ms/step - loss: 0.0905 - acc: 0.9661 - val_loss: 0.8104 - val_acc: 0.7925\n",
+      "Epoch 27/50\n",
+      "250/250 [==============================] - 62s 247ms/step - loss: 0.0887 - acc: 0.9660 - val_loss: 0.9335 - val_acc: 0.7701\n",
+      "Epoch 28/50\n",
+      "250/250 [==============================] - 62s 248ms/step - loss: 0.0826 - acc: 0.9724 - val_loss: 0.9797 - val_acc: 0.7784\n",
+      "Epoch 29/50\n",
+      "250/250 [==============================] - 62s 248ms/step - loss: 0.0791 - acc: 0.9715 - val_loss: 1.0009 - val_acc: 0.7766\n",
+      "Epoch 30/50\n",
+      "250/250 [==============================] - 62s 247ms/step - loss: 0.0797 - acc: 0.9705 - val_loss: 0.7901 - val_acc: 0.7950\n",
+      "Epoch 31/50\n",
+      "250/250 [==============================] - 62s 248ms/step - loss: 0.0829 - acc: 0.9700 - val_loss: 0.9157 - val_acc: 0.7781\n",
+      "Epoch 32/50\n",
+      "250/250 [==============================] - 62s 246ms/step - loss: 0.0706 - acc: 0.9726 - val_loss: 1.0395 - val_acc: 0.7596\n",
+      "Epoch 33/50\n",
+      "250/250 [==============================] - 62s 248ms/step - loss: 0.0808 - acc: 0.9706 - val_loss: 1.0149 - val_acc: 0.7886\n",
+      "Epoch 34/50\n",
+      "250/250 [==============================] - 62s 248ms/step - loss: 0.1011 - acc: 0.9649 - val_loss: 0.7764 - val_acc: 0.7881\n",
+      "Epoch 35/50\n",
+      "250/250 [==============================] - 63s 252ms/step - loss: 0.0739 - acc: 0.9717 - val_loss: 0.9102 - val_acc: 0.7876\n",
+      "Epoch 36/50\n",
+      "250/250 [==============================] - 62s 248ms/step - loss: 0.0613 - acc: 0.9771 - val_loss: 0.9735 - val_acc: 0.7854\n",
+      "Epoch 37/50\n",
+      "250/250 [==============================] - 62s 247ms/step - loss: 0.0619 - acc: 0.9795 - val_loss: 0.9310 - val_acc: 0.7751\n",
+      "Epoch 38/50\n",
+      "250/250 [==============================] - 62s 248ms/step - loss: 0.0653 - acc: 0.9779 - val_loss: 1.0802 - val_acc: 0.7756\n",
+      "Epoch 39/50\n",
+      "250/250 [==============================] - 62s 247ms/step - loss: 0.0669 - acc: 0.9792 - val_loss: 1.0804 - val_acc: 0.7756\n",
+      "Epoch 40/50\n",
+      "250/250 [==============================] - 62s 248ms/step - loss: 0.0671 - acc: 0.9788 - val_loss: 0.9931 - val_acc: 0.7670\n",
+      "Epoch 41/50\n",
+      "250/250 [==============================] - 62s 249ms/step - loss: 0.0527 - acc: 0.9829 - val_loss: 1.0513 - val_acc: 0.7821\n",
+      "Epoch 42/50\n",
+      "250/250 [==============================] - 63s 253ms/step - loss: 0.0584 - acc: 0.9792 - val_loss: 1.0636 - val_acc: 0.7876\n",
+      "Epoch 43/50\n",
+      "250/250 [==============================] - 74s 296ms/step - loss: 0.0563 - acc: 0.9795 - val_loss: 1.0747 - val_acc: 0.7726\n",
+      "Epoch 44/50\n",
+      "250/250 [==============================] - 121s 486ms/step - loss: 0.0739 - acc: 0.9752 - val_loss: 1.1222 - val_acc: 0.7710\n",
+      "Epoch 45/50\n",
+      "250/250 [==============================] - 125s 500ms/step - loss: 0.0685 - acc: 0.9767 - val_loss: 1.2078 - val_acc: 0.7637\n",
+      "Epoch 46/50\n",
+      "250/250 [==============================] - 63s 251ms/step - loss: 0.0618 - acc: 0.9781 - val_loss: 0.9984 - val_acc: 0.7846\n",
+      "Epoch 47/50\n",
+      "250/250 [==============================] - 63s 251ms/step - loss: 0.0639 - acc: 0.9773 - val_loss: 1.1246 - val_acc: 0.7692\n",
+      "Epoch 48/50\n",
+      "250/250 [==============================] - 66s 262ms/step - loss: 0.0579 - acc: 0.9789 - val_loss: 1.1001 - val_acc: 0.7705\n",
+      "Epoch 49/50\n",
+      "250/250 [==============================] - 60s 238ms/step - loss: 0.0515 - acc: 0.9825 - val_loss: 1.0665 - val_acc: 0.7896\n",
+      "Epoch 50/50\n",
+      "250/250 [==============================] - 59s 236ms/step - loss: 0.0567 - acc: 0.9795 - val_loss: 1.2024 - val_acc: 0.7746\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "<keras.callbacks.History at 0x15860310908>"
+      ]
+     },
+     "execution_count": 16,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "model.fit_generator(x_train,steps_per_epoch=250,epochs=50,validation_data=x_test,validation_steps=63)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "model.save('model1.h5')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
